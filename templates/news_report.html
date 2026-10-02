@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ query | title }} — News Report</title>
+<style>
+/* ── Google Fonts ───────────────────────────────────────────────────────────
+   WeasyPrint fetches @import at render time. If your environment blocks
+   outbound HTTP during render, replace with local @font-face rules pointing
+   to bundled .woff/.ttf files in templates/fonts/. */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap');
+
+/* ── Page setup ─────────────────────────────────────────────────────────── */
+@page {
+  size: A4;
+  margin: 0;
+  @bottom-center {
+    content: "Page " counter(page) " of " counter(pages) " · AI Agent News Report";
+    font-family: 'Inter', Helvetica, sans-serif;
+    font-size: 7.5pt;
+    color: #8892a4;
+    margin-bottom: 6mm;
+  }
+}
+
+/* ── Custom properties ──────────────────────────────────────────────────── */
+:root {
+  --navy:         #0d1b2a;
+  --navy-mid:     #1b2d42;
+  --navy-light:   #243b55;
+  --amber:        #f59e0b;
+  --amber-light:  #fbbf24;
+  --ice:          #f0f4f8;
+  --text-dark:    #1a202c;
+  --text-mid:     #4a5568;
+  --text-light:   #718096;
+  --white:        #ffffff;
+  --card-radius:  10px;
+  --shadow:       0 2px 12px rgba(0,0,0,0.10);
+}
+
+/* ── Global reset ───────────────────────────────────────────────────────── */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', Helvetica, Arial, sans-serif;
+  background: var(--ice);
+  color: var(--text-dark);
+  font-size: 10pt;
+  line-height: 1.65;
+}
+
+/* ── Cover banner ───────────────────────────────────────────────────────── */
+.cover {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 55%, var(--navy-light) 100%);
+  padding: 52px 48px 40px;
+  page-break-after: avoid;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative amber accent bar */
+.cover::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0;
+  width: 6px; height: 100%;
+  background: var(--amber);
+}
+
+/* Decorative circle */
+.cover::after {
+  content: '';
+  position: absolute;
+  right: -60px; top: -60px;
+  width: 260px; height: 260px;
+  border-radius: 50%;
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.cover-tag {
+  display: inline-block;
+  font-family: 'Inter', sans-serif;
+  font-size: 7pt;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 16px;
+}
+
+.cover-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 28pt;
+  font-weight: 800;
+  color: var(--white);
+  line-height: 1.2;
+  margin-bottom: 16px;
+  max-width: 520px;
+}
+
+.cover-meta {
+  font-size: 8pt;
+  color: rgba(255,255,255,0.55);
+  margin-top: 4px;
+}
+
+.cover-meta span {
+  margin-right: 16px;
+}
+
+/* ── AI Summary section ─────────────────────────────────────────────────── */
+.summary-section {
+  background: var(--white);
+  margin: 28px 32px 0;
+  border-radius: var(--card-radius);
+  padding: 24px 28px;
+  border-left: 4px solid var(--amber);
+  page-break-inside: avoid;
+}
+
+.summary-label {
+  font-size: 7pt;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 8px;
+}
+
+.summary-text {
+  font-size: 10.5pt;
+  color: var(--text-dark);
+  line-height: 1.7;
+}
+
+/* ── Section heading (Articles) ─────────────────────────────────────────── */
+.articles-heading {
+  font-family: 'Inter', sans-serif;
+  font-size: 8pt;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-light);
+  padding: 28px 32px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  margin: 0 32px;
+}
+
+/* ── Article cards ──────────────────────────────────────────────────────── */
+.cards-grid {
+  padding: 16px 32px 32px;
+}
+
+.article-card {
+  background: var(--white);
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  margin-bottom: 22px;
+  page-break-inside: avoid;
+  border: 1px solid #e8edf4;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+
+/* ── Card image / placeholder ───────────────────────────────────────────── */
+.card-image-wrap {
+  width: 220px;
+  flex-shrink: 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+  position: relative;
+}
+
+.card-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Placeholder gradient card when no image is available */
+.card-placeholder {
+  width: 220px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e3a5f 0%, #2d5082 50%, #1a2f4a 100%);
+  position: relative;
+}
+
+.card-placeholder-domain {
+  font-family: 'Inter', sans-serif;
+  font-size: 11pt;
+  font-weight: 700;
+  color: rgba(255,255,255,0.25);
+  letter-spacing: 1px;
+  text-align: center;
+  padding: 0 16px;
+  word-break: break-all;
+}
+
+/* Decorative corner accent on placeholder */
+.card-placeholder::before {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 60px; height: 60px;
+  background: rgba(245, 158, 11, 0.15);
+  border-radius: 60px 0 0 0;
+}
+
+/* ── AI-generated image caption badge ───────────────────────────────────
+   MANDATORY whenever is_ai_generated is True — see news_image_fetcher.py  */
+.ai-caption-badge {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  background: rgba(0,0,0,0.72);
+  color: rgba(255,255,255,0.90);
+  font-family: 'Inter', sans-serif;
+  font-size: 6.5pt;
+  font-weight: 500;
+  padding: 3px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+}
+
+/* ── Card body ──────────────────────────────────────────────────────────── */
+.card-body {
+  padding: 16px 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-meta-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+
+.card-domain-badge {
+  font-size: 6.5pt;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--navy-mid);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.card-date {
+  font-size: 7.5pt;
+  color: var(--text-light);
+}
+
+.card-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 13pt;
+  font-weight: 700;
+  color: var(--text-dark);
+  line-height: 1.3;
+  margin-bottom: 10px;
+}
+
+.card-snippet {
+  font-size: 9pt;
+  color: var(--text-mid);
+  line-height: 1.65;
+  margin-bottom: 14px;
+}
+
+.card-footer {
+  border-top: 1px solid #edf2f7;
+  padding-top: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-url {
+  font-size: 7.5pt;
+  color: var(--amber);
+  font-weight: 500;
+  text-decoration: none;
+  word-break: break-all;
+  max-width: 85%;
+}
+
+.card-arrow {
+  font-size: 9pt;
+  color: var(--amber);
+  font-weight: 700;
+}
+
+/* ── Footer stripe ──────────────────────────────────────────────────────── */
+.doc-footer {
+  background: var(--navy);
+  padding: 16px 32px;
+  margin-top: 8px;
+}
+
+.doc-footer-text {
+  font-size: 7.5pt;
+  color: rgba(255,255,255,0.4);
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<!-- ── Cover Banner ────────────────────────────────────────────────────────── -->
+<div class="cover">
+  <div class="cover-tag">📡 AI Agent News Report</div>
+  <div class="cover-title">{{ headline }}</div>
+  <div class="cover-meta">
+    <span>🗓 {{ generated_at }}</span>
+    <span>📰 {{ articles | length }} article{% if articles | length != 1 %}s{% endif %}</span>
+  </div>
+</div>
+
+<!-- ── AI Summary ───────────────────────────────────────────────────────────── -->
+{% if answer %}
+<div class="summary-section">
+  <div class="summary-label">💡 AI Summary</div>
+  <div class="summary-text">{{ answer }}</div>
+</div>
+{% endif %}
+
+<!-- ── Article Cards ─────────────────────────────────────────────────────────── -->
+{% if articles %}
+<div class="articles-heading">📰 News Articles</div>
+<div class="cards-grid">
+  {% for article in articles %}
+  <div class="article-card">
+
+    <!-- Image / Placeholder -->
+    {% if article.image and article.image.local_path %}
+      <div class="card-image-wrap" style="position:relative;">
+        <img src="file://{{ article.image.local_path }}" alt="{{ article.title | e }}" />
+        {% if article.image.is_ai_generated %}
+          {# MANDATORY caption for AI-generated images — do NOT remove, see news_image_fetcher.py #}
+          <div class="ai-caption-badge">🤖 AI-generated illustration</div>
+        {% endif %}
+      </div>
+    {% else %}
+      <!-- Styled gradient placeholder when no real image is available -->
+      <div class="card-placeholder">
+        <div class="card-placeholder-domain">{{ article.url | replace('https://','') | replace('http://','') | truncate(30, True, '') }}</div>
+      </div>
+    {% endif %}
+
+    <!-- Card Body -->
+    <div class="card-body">
+      <div class="card-meta-row">
+        <span class="card-domain-badge">
+          {{ article.url | replace('https://','') | replace('http://','') | replace('www.','') | truncate(25, True, '…') }}
+        </span>
+        {% if article.published_date %}
+          <span class="card-date">{{ article.published_date }}</span>
+        {% endif %}
+      </div>
+
+      <div class="card-title">{{ article.title }}</div>
+      <div class="card-snippet">{{ article.snippet }}</div>
+
+      <div class="card-footer">
+        <a class="card-url" href="{{ article.url }}">{{ article.url | truncate(70, True, '…') }}</a>
+        <span class="card-arrow">→</span>
+      </div>
+    </div>
+
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- ── Footer ────────────────────────────────────────────────────────────────── -->
+<div class="doc-footer">
+  <div class="doc-footer-text">
+    Generated by AI Agent · {{ generated_at }} · For personal use only
+  </div>
+</div>
+
+</body>
+</html>

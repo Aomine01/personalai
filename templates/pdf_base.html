@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap');
+
+:root {
+  --navy:         #0d1b2a;
+  --navy-mid:     #1b2d42;
+  --navy-light:   #243b55;
+  --amber:        #f59e0b;
+  --amber-light:  #fbbf24;
+  --ice:          #f4f7fb;
+  --card-bg:      #ffffff;
+  --text-dark:    #0f172a;
+  --text-mid:     #334155;
+  --text-light:   #64748b;
+  --border:       #e2e8f0;
+  --heading-font: {{ style.heading_font | default("'Playfair Display', Georgia, serif") }};
+  --body-font:    {{ style.body_font | default("'Inter', Helvetica, Arial, sans-serif") }};
+  --accent-color: {{ style.accent_color_hex | default("#f59e0b") }};
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+@page {
+  size: A4;
+  margin: 16mm 18mm 18mm 18mm;
+  @top-right {
+    content: "AI Agent Document Report";
+    font-family: 'Inter', Helvetica, sans-serif;
+    font-size: 7pt;
+    color: #94a3b8;
+  }
+  @bottom-center {
+    content: "Page " counter(page) " of " counter(pages);
+    font-family: 'Inter', Helvetica, sans-serif;
+    font-size: 7.5pt;
+    color: #94a3b8;
+    margin-bottom: 3mm;
+  }
+}
+
+@page:first {
+  margin: 0;
+  @top-right { content: none; }
+  @bottom-center {
+    content: "Page " counter(page) " of " counter(pages);
+    font-family: 'Inter', Helvetica, sans-serif;
+    font-size: 7.5pt;
+    color: #94a3b8;
+    margin-bottom: 5mm;
+  }
+}
+
+body {
+  font-family: var(--body-font);
+  font-size: 9.5pt;
+  color: var(--text-dark);
+  line-height: 1.6;
+  background: var(--ice);
+}
+
+/* ── Hero Cover Banner (Page 1) ────────────────────────────────────────── */
+.cover {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, var(--navy-light) 100%);
+  padding: 44px 38px 28px;
+  position: relative;
+  page-break-after: avoid;
+}
+
+.cover::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0;
+  width: 5px; height: 100%;
+  background: var(--amber);
+}
+
+.cover-tag {
+  display: inline-block;
+  font-family: 'Inter', sans-serif;
+  font-size: 7pt;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 8px;
+}
+
+.cover-title {
+  font-family: var(--heading-font);
+  font-size: 22pt;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.25;
+  margin-bottom: 10px;
+}
+
+.cover-meta {
+  font-size: 8pt;
+  color: rgba(255,255,255,0.7);
+}
+
+.cover-meta span {
+  margin-right: 18px;
+}
+
+/* ── Main Container ────────────────────────────────────────────────────── */
+.main-wrapper {
+  padding: 20px 32px 32px;
+}
+
+/* ── Hero Image / Poster (Aspect-Ratio Aware) ─────────────────────────── */
+.hero-image-wrap {
+  text-align: center;
+  margin-bottom: 20px;
+  page-break-inside: avoid;
+}
+
+.hero-image-wrap img {
+  max-width: 100%;
+  max-height: {% if image_meta and image_meta.is_portrait %}280px{% else %}220px{% endif %};
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+  display: inline-block;
+  background: #ffffff;
+}
+
+/* ── Section Structure ─────────────────────────────────────────────────── */
+.section-card {
+  margin-bottom: 18px;
+  page-break-inside: auto;
+}
+
+.section-heading {
+  font-family: var(--heading-font);
+  color: var(--navy);
+  font-size: 13pt;
+  font-weight: 700;
+  margin: 14px 0 10px;
+  padding-bottom: 5px;
+  border-bottom: 1.5px solid #e2e8f0;
+  page-break-after: avoid;
+  page-break-inside: avoid;
+}
+
+.section-heading::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 13px;
+  background: var(--amber);
+  margin-right: 8px;
+  border-radius: 2px;
+  vertical-align: middle;
+}
+
+/* ── Typography & List Item Cards ──────────────────────────────────────── */
+.section-body {
+  font-size: 9pt;
+  color: var(--text-mid);
+}
+
+.section-body p {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  line-height: 1.55;
+  page-break-inside: avoid;
+}
+
+.section-body ul, .section-body ol {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0;
+}
+
+.section-body li {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-left: 3.5px solid var(--navy-mid);
+  border-radius: 7px;
+  padding: 10px 16px;
+  margin-bottom: 8px;
+  page-break-inside: avoid;
+  break-inside: avoid;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  line-height: 1.5;
+  color: var(--text-mid);
+}
+
+.section-body li strong, .section-body li b {
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.section-body em, .section-body i {
+  color: #475569;
+  font-style: italic;
+}
+
+/* ── Tables ────────────────────────────────────────────────────────────── */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.2em 0 0.4em;
+  font-size: 8.5pt;
+  border-radius: 6px;
+  overflow: hidden;
+  page-break-inside: avoid;
+}
+
+th {
+  background-color: var(--navy-mid);
+  color: #ffffff;
+  font-weight: 600;
+  text-align: left;
+  padding: 7px 11px;
+  border: 1px solid #cbd5e1;
+}
+
+td {
+  padding: 6px 11px;
+  border: 1px solid #e2e8f0;
+  vertical-align: top;
+  background: #ffffff;
+}
+
+tr:nth-child(even) td { background-color: #f8fafc; }
+</style>
+</head>
+<body>
+
+<!-- ── Cover Banner (Page 1) ───────────────────────────────────────────────── -->
+<div class="cover">
+  <div class="cover-tag">📄 AI Agent Report</div>
+  <div class="cover-title">{{ title }}</div>
+  <div class="cover-meta">
+    <span>🗓 {{ generated_at }}</span>
+    <span>📑 {{ sections | length }} Section{% if sections | length != 1 %}s{% endif %}</span>
+  </div>
+</div>
+
+<!-- ── Main Content ────────────────────────────────────────────────────────── -->
+<div class="main-wrapper">
+
+  {% if image_path %}
+  <div class="hero-image-wrap">
+    <img src="file://{{ image_path }}" alt="{{ title }}" />
+  </div>
+  {% endif %}
+
+  {% for section in sections %}
+    {% if (section.heading and section.heading.strip().lower() != title.strip().lower()) or section.body_html or section.body or section.table_rows %}
+    <div class="section-card">
+      {% if section.heading and section.heading.strip().lower() != title.strip().lower() %}
+        <div class="section-heading">{{ section.heading }}</div>
+      {% endif %}
+
+      {% if section.body_html %}
+        <div class="section-body">{{ section.body_html | safe }}</div>
+      {% elif section.body %}
+        <div class="section-body"><p>{{ section.body }}</p></div>
+      {% endif %}
+
+      {% if section.table_rows %}
+        <table>
+          {% for row in section.table_rows %}
+            {% if loop.first %}<tr>{% for cell in row %}<th>{{ cell }}</th>{% endfor %}</tr>
+            {% else %}<tr>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>
+            {% endif %}
+          {% endfor %}
+        </table>
+      {% endif %}
+    </div>
+    {% endif %}
+  {% endfor %}
+
+</div>
+
+</body>
+</html>

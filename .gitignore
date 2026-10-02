@@ -1,0 +1,15 @@
+.env
+*.env
+.env.*
+!.env.example
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+history.db
+history.db-journal
+*.session
+*.session-journal
+.DS_Store
+*.log
